@@ -1,8 +1,10 @@
 <?php
 $ddiirr = "./i/";
 $content = '';
+$enableScript = true;
 if(isset($_GET['pass'])){
     if($_GET['pass'] == "s3cret"){
+        $enableScript = false;
         $dir = scandir($ddiirr);
         
         $content .= '<h3>Uploaded images</h3>';
@@ -16,6 +18,7 @@ if(isset($_GET['pass'])){
         $content = 'Incorrect password!';
     }
 } elseif (isset($_POST["submit"])) {
+    $enableScript = false;
     $random = random_string();
     $target = $ddiirr. $random .'.jpg';
     $link = 'http://4nk1t.gq/i/'. $random .'.jpg';
@@ -99,73 +102,79 @@ function random_string($length = 8){
             }
         ?>
         
-        <script>
-            document.onpaste = (data) => {
-                document.onpaste = null; //To make sure multiple requests are not send.
-                var items = data.clipboardData.items;
-                
-                retrieveImageFromClipboardAsBlob(data, imageBlob => {
-                    if(imageBlob){
-                        message.innerHTML = 'Uploading....';
-                        page1.hidden = true;
-                        page2.hidden = false;
-                        var ctx = canvas.getContext('2d');
+        <?php
+            if($enableScript){
+        ?>
+                <script>
+                    document.onpaste = (data) => {
+                        document.onpaste = null; //To make sure multiple requests are not send.
+                        var items = data.clipboardData.items;
                         
-                        var img = new Image();
+                        retrieveImageFromClipboardAsBlob(data, imageBlob => {
+                            if(imageBlob){
+                                message.innerHTML = 'Uploading....';
+                                page1.hidden = true;
+                                page2.hidden = false;
+                                var ctx = canvas.getContext('2d');
+                                
+                                var img = new Image();
 
-                        img.onload = function(){
-                            canvas.width = this.width;
-                            canvas.height = this.height;
+                                img.onload = function(){
+                                    canvas.width = this.width;
+                                    canvas.height = this.height;
 
-                            ctx.drawImage(img, 0, 0);
-                            
-                            var formData = new FormData();
-                            formData.append('ajax', '');
-                            formData.append('imgBase64', canvas.toDataURL());
-                            
-                            $.ajax({
-                               url: "index.php",
-                               type: "POST",
-                               data: formData,
-                               processData: false,
-                               contentType: false,
-                            }).done(function(respond){
-                                message.innerHTML = respond;
-                            });
+                                    ctx.drawImage(img, 0, 0);
+                                    
+                                    var formData = new FormData();
+                                    formData.append('ajax', '');
+                                    formData.append('imgBase64', canvas.toDataURL());
+                                    
+                                    $.ajax({
+                                    url: "index.php",
+                                    type: "POST",
+                                    data: formData,
+                                    processData: false,
+                                    contentType: false,
+                                    }).done(function(respond){
+                                        message.innerHTML = respond;
+                                    });
+                                };
+
+                                var URLObj = window.URL || window.webkitURL;
+                                
+                                img.src = URLObj.createObjectURL(imageBlob);
+                            }
+                        })
+                    }
+                    
+                    function retrieveImageFromClipboardAsBlob(pasteEvent, callback){
+                        if(pasteEvent.clipboardData == false){
+                            if(typeof(callback) == "function"){
+                                callback(undefined);
+                            }
                         };
 
-                        var URLObj = window.URL || window.webkitURL;
-                        
-                        img.src = URLObj.createObjectURL(imageBlob);
+                        var items = pasteEvent.clipboardData.items;
+
+                        if(items == undefined){
+                            if(typeof(callback) == "function"){
+                                callback(undefined);
+                            }
+                        };
+
+                        for (var i = 0; i < items.length; i++) {
+                            if (items[i].type.indexOf("image") == -1) continue;
+                            var blob = items[i].getAsFile();
+
+                            if(typeof(callback) == "function"){
+                                callback(blob);
+                            }
+                        }
                     }
-                })
+                </script>
+            <?php
             }
-            
-            function retrieveImageFromClipboardAsBlob(pasteEvent, callback){
-                if(pasteEvent.clipboardData == false){
-                    if(typeof(callback) == "function"){
-                        callback(undefined);
-                    }
-                };
-
-                var items = pasteEvent.clipboardData.items;
-
-                if(items == undefined){
-                    if(typeof(callback) == "function"){
-                        callback(undefined);
-                    }
-                };
-
-                for (var i = 0; i < items.length; i++) {
-                    if (items[i].type.indexOf("image") == -1) continue;
-                    var blob = items[i].getAsFile();
-
-                    if(typeof(callback) == "function"){
-                        callback(blob);
-                    }
-                }
-            }
-        </script>
+            ?>
     </div>
 </body>
 </html>
