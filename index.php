@@ -106,7 +106,9 @@ function random_string($length = 8){
                 
                 retrieveImageFromClipboardAsBlob(data, imageBlob => {
                     if(imageBlob){
-                        alert('Uploading...')
+                        message.innerHTML = 'Uploading....';
+                        page1.hidden = true;
+                        page2.hidden = false;
                         var ctx = canvas.getContext('2d');
                         
                         var img = new Image();
@@ -129,8 +131,6 @@ function random_string($length = 8){
                                contentType: false,
                             }).done(function(respond){
                                 message.innerHTML = respond;
-                                page1.hidden = true;
-                                page2.hidden = false;
                             });
                         };
 
