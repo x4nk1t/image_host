@@ -10,7 +10,7 @@ if(isset($_GET['pass'])){
         $content .= '<h3>Uploaded images</h3>';
         foreach($dir as $file){
             if($file != '.' && $file != '..'){
-                $link = 'http://4nk1t.gq/i/'.$file;
+                $link = 'https://4nk1t.gq/i/'.$file;
                 $content .= '<div class="nextTo"><img src="/i/'.$file.'" height="40%" width="auto"><br><span class="link"><a target="_blank" href="'.$link.'">'.$link.'</a></span></div>';
             }
         }
@@ -21,7 +21,7 @@ if(isset($_GET['pass'])){
     $enableScript = false;
     $random = random_string();
     $target = $ddiirr. $random .'.jpg';
-    $link = 'http://4nk1t.gq/i/'. $random .'.jpg';
+    $link = 'https://4nk1t.gq/i/'. $random .'.jpg';
     
     if(move_uploaded_file($_FILES["fileToUpload"]["tmp_name"], $target)){
         $content = 'File successfully uploaded.<br>Link: <a target="_blank" href="'.$link.'">'.$link.'</a>';
@@ -31,7 +31,7 @@ if(isset($_GET['pass'])){
 } elseif (isset($_POST['ajax'])){
     $random = random_string();
     $target = $ddiirr. $random .'.jpg';
-    $link = 'http://4nk1t.gq/i/'. $random .'.jpg';
+    $link = 'https://4nk1t.gq/i/'. $random .'.jpg';
     $img = $_POST["imgBase64"];
     
     $img = str_replace('data:image/png;base64,', '', $img);
